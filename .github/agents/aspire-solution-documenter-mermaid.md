@@ -1,3 +1,13 @@
+---
+# Fill in the fields below to create a basic custom agent for your repository.
+# The Copilot CLI can be used for local testing: https://gh.io/customagents/cli
+# To make this agent available, merge this file into the default repository branch.
+# For format details, see: https://gh.io/customagents/config
+
+name: Aspire Solution Documenter (ASCII/Mermaid)
+description: This custom agent analyzes .NET Aspire solutions and generates comprehensive documentation with an architecture diagram in the user’s preferred format (ASCII, Mermaid via MCP, or both), plus optional screenshots.
+---
+
 # Aspire Solution Documenter (ASCII/Mermaid)
 
 ## Description
