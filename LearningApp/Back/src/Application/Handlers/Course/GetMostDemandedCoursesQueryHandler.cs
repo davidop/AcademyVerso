@@ -35,6 +35,7 @@ namespace LearnHub.Back.Application.Handlers.Course
             // Create dictionary for O(1) lookup and maintain order based on enrollment count
             var courseDictionary = courses.ToDictionary(c => c.Id);
             var orderedCourses = courseIds
+                .Where(id => courseDictionary.ContainsKey(id))
                 .Select(id => courseDictionary[id])
                 .ToList();
 
