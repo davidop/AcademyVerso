@@ -19,14 +19,25 @@ namespace LearnHub.Back.Application.Handlers.Course
 
         public async Task<List<CourseDto>> Handle(GetMostDemandedCoursesQuery request, CancellationToken cancellationToken)
         {
+            var courseIds = await _context.Courses
+                .Select(c => new { c.Id, EnrollmentCount = c.Enrollments.Count })
+                .OrderByDescending(x => x.EnrollmentCount)
+                .Take(request.Top)
+                .Select(x => x.Id)
+                .ToListAsync(cancellationToken);
+
             var courses = await _context.Courses
                 .Include(c => c.Instructor)
                 .Include(c => c.Enrollments)
-                .OrderByDescending(c => c.Enrollments.Count)
-                .Take(request.Top)
+                .Where(c => courseIds.Contains(c.Id))
                 .ToListAsync(cancellationToken);
 
-            return _mapper.Map<List<CourseDto>>(courses);
+            // Maintain the order based on enrollment count
+            var orderedCourses = courseIds
+                .Select(id => courses.First(c => c.Id == id))
+                .ToList();
+
+            return _mapper.Map<List<CourseDto>>(orderedCourses);
         }
     }
 }
