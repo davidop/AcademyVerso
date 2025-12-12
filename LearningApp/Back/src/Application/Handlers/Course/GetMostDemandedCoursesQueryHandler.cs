@@ -32,9 +32,10 @@ namespace LearnHub.Back.Application.Handlers.Course
                 .Where(c => courseIds.Contains(c.Id))
                 .ToListAsync(cancellationToken);
 
-            // Maintain the order based on enrollment count
+            // Create dictionary for O(1) lookup and maintain order based on enrollment count
+            var courseDictionary = courses.ToDictionary(c => c.Id);
             var orderedCourses = courseIds
-                .Select(id => courses.First(c => c.Id == id))
+                .Select(id => courseDictionary[id])
                 .ToList();
 
             return _mapper.Map<List<CourseDto>>(orderedCourses);
