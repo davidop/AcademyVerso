@@ -147,4 +147,45 @@ public class CourseControllerTests
         // Assert
         result.Should().BeOfType<NoContentResult>();
     }
+
+    [Test]
+    [AutoMoqData]
+    public async Task GetMostDemanded_ShouldReturnOkWithMostDemandedCourses(
+        List<CourseDto> courses,
+        [Frozen] Mock<IMediator> mediatorMock,
+        CourseController sut)
+    {
+        // Arrange
+        int top = 10;
+        mediatorMock.Setup(x => x.Send(It.Is<GetMostDemandedCoursesQuery>(q => q.Top == top), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(courses);
+
+        // Act
+        var result = await sut.GetMostDemanded(top);
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(courses);
+    }
+
+    [Test]
+    [AutoMoqData]
+    public async Task GetMostDemanded_WithDefaultTop_ShouldReturnOkWithDefaultNumberOfCourses(
+        List<CourseDto> courses,
+        [Frozen] Mock<IMediator> mediatorMock,
+        CourseController sut)
+    {
+        // Arrange
+        mediatorMock.Setup(x => x.Send(It.Is<GetMostDemandedCoursesQuery>(q => q.Top == 10), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(courses);
+
+        // Act
+        var result = await sut.GetMostDemanded();
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var okResult = result.Result as OkObjectResult;
+        okResult!.Value.Should().BeEquivalentTo(courses);
+    }
 }
