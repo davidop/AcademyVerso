@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 
 namespace LearnHub.Back.Api.Controllers
@@ -40,15 +41,17 @@ namespace LearnHub.Back.Api.Controllers
         /// <summary>
         /// Gets the most demanded courses
         /// </summary>
-        /// <param name="top">Number of top courses to retrieve (default: 10)</param>
+        /// <param name="top">Number of top courses to retrieve (default: 10, max: 100)</param>
         /// <returns>List of most demanded courses ordered by enrollment count</returns>
         /// <response code="200">Returns the list of most demanded courses</response>
+        /// <response code="400">Invalid top parameter</response>
         [HttpGet("most-demanded")]
         [SwaggerOperation(
             Summary = "Gets most demanded courses",
             Description = "Retrieves the courses with the highest number of enrollments")]
         [ProducesResponseType(typeof(List<CourseDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<CourseDto>>> GetMostDemanded([FromQuery] int top = 10)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<CourseDto>>> GetMostDemanded([FromQuery][Range(1, 100)] int top = 10)
         {
             var result = await _mediator.Send(new GetMostDemandedCoursesQuery { Top = top });
             return Ok(result);
